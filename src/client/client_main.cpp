@@ -1,16 +1,26 @@
+#include "aes.h"
 #include <string>
+#include <cstdio>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <argparse/argparse.hpp>
 
 int main(int argc, char *argv[]) {
-    int in_port = 6767;
-    
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    argparse::ArgumentParser arg_parser("client");
+    arg_parser.add_argument("--in-port")
+        .help("Port ")
+        .default_value(6767);
+    arg_parser.parse_args(argc, argv);
+    int opt = 1;
+    int in_port = arg_parser.get<int>("--in-port");
+    printf("Client");
+    int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, 1);
     struct sockaddr_in server_address;
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(in_port);
+    server_address.sin_addr.s_addr = INADDR_ANY;
     /*
     IP
     Name

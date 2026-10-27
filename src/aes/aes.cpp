@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 #include <stdexcept>
+#include <random>
 
 #include "galois_lut.h"
 
@@ -132,15 +133,44 @@ std::vector<std::vector<uint8_t>> aes_schedule_keys(std::span<uint8_t> key, AEST
     return round_keys;
 }
 
+std::array<uint8_t, 16> aes_generate_iv()
+{
+    std::random_device rd;
+    std::uniform_int_distribution<int> dist(0, 255);
+    std::array<uint8_t, 16> iv;
+    for(int i = 0; i < 16; i++) {
+        iv[i] = static_cast<uint8_t>(dist(rd));
+    }
+    return iv;
+}
 
-std::vector<uint8_t> AES::encrypt(std::span<const uint8_t> plaintext)
+std::vector<uint8_t> AES::encrypt(std::span<const uint8_t> plaintext, std::array<uint8_t, 16> iv)
 {
     if(plaintext.size() % 16 != 0) {
         throw std::length_error("Plaintext isn't padded to fit AES block size (16 bytes)");
     }
     std::vector<std::vector<uint8_t>> round_keys = aes_schedule_keys(this->key, this->type);
     std::vector<uint8_t> ciphertext;
-    
+    int rounds = 11;
+    for(int i = 0; i < plaintext.size(); i += 16) {
+        std::array<uint8_t, 16> block;
+        std::copy(plaintext.begin() + i, plaintext.begin() + i + 16, block.begin());
+        for(int j = 0; j < 16; j++) {
+            block[j] ^= round_keys[0][j];
+        }
+        for(int j = 1; j < rounds; j++) {
+            aes_sub_bytes(block);
+            aes_shift_rows(block);
+            if(j < (rounds - 1)) {
+                aes_mix_columns(block);
+            }
+            for(int k = 0; k < 16; k++) {
+                block[k] ^= round_keys[j][k];
+            }
+        }
+        ciphertext.insert(ciphertext.end(), block.begin(), block.end());
+    }
 
-    return std::vector<uint8_t>();
+    return ciphertext;
 }
+

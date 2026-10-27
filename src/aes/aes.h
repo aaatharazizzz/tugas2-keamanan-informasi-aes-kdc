@@ -1,8 +1,10 @@
 #pragma once
+#include <span>
 #include <array>
 #include <cinttypes>
 #include <vector>
 #include <stdexcept>
+#include <optional>
 
 enum class AESType {
     AES128,
@@ -30,6 +32,8 @@ public:
     void add_round_key();
 };
 
+std::array<uint8_t, 16> aes_generate_iv();
+
 class AES {
 private:
     std::vector<uint8_t> key;
@@ -45,5 +49,5 @@ public:
             throw std::length_error("Key size mismatch (AES256 key size not 32 bytes)");
         }
     }
-    std::vector<uint8_t> encrypt(std::span<const uint8_t> plaintext);
+    std::vector<uint8_t> encrypt(std::span<const uint8_t> plaintext, std::array<uint8_t, 16> iv = aes_generate_iv());
 };
