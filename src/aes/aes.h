@@ -50,4 +50,5 @@ public:
         }
     }
     std::vector<uint8_t> encrypt(std::span<const uint8_t> plaintext, std::array<uint8_t, 16> iv = aes_generate_iv());
+    std::vector<uint8_t> decrypt(std::span<const uint8_t> ciphertext);
 };

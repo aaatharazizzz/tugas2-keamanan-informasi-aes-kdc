@@ -174,3 +174,33 @@ std::vector<uint8_t> AES::encrypt(std::span<const uint8_t> plaintext, std::array
     return ciphertext;
 }
 
+std::vector<uint8_t> AES::decrypt(std::span<const uint8_t> ciphertext)
+{
+    if(ciphertext.size() % 16 != 0) {
+        throw std::length_error("Plaintext isn't padded to fit AES block size (16 bytes)");
+    }
+    std::vector<std::vector<uint8_t>> round_keys = aes_schedule_keys(this->key, this->type);
+    std::vector<uint8_t> plaintext;
+    int rounds = 11;
+    for(int i = 0; i < ciphertext.size(); i += 16) {
+        std::array<uint8_t, 16> block;
+        std::copy(ciphertext.begin() + i, ciphertext.begin() + i + 16, block.begin());
+        
+        for(int j = rounds - 1; j > 0; j--) {
+            for(int k = 0; k < 16; k++) {
+                block[k] ^= round_keys[j][k];
+            }
+            if(j < (rounds - 1)) {
+                aes_mix_columns(block, true);
+            }
+            aes_shift_rows(block, true);
+            aes_sub_bytes(block, true);
+        }
+        for(int j = 0; j < 16; j++) {
+            block[j] ^= round_keys[0][j];
+        }
+        plaintext.insert(plaintext.end(), block.begin(), block.end());
+    }
+
+    return plaintext;
+}
