@@ -1,5 +1,7 @@
 #include "aes.h"
 #include "kdc.h"
+#include "kdc_scenario_enum.h"
+
 #include <string>
 #include <cstdio>
 #include <unistd.h>
@@ -36,6 +38,7 @@ void handle_kdc_response(const char* buffer) {
         {"part_2", id_b}
     }
     */
+   AES aes = AES(A)
     
 }
 
@@ -57,6 +60,6 @@ void KDC::listen()
 {
     while(true) {
         int client_socket = accept(server_socket, nullptr, nullptr);
-        
+
     }
 }

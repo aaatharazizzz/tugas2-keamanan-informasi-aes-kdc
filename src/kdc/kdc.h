@@ -7,16 +7,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-enum class KDCScenario : int {
-    RequestToKDC,
-    KDCResponse,
-    Forward,
-    Handshake1,
-    Handshake2
-    
-};
-
-class User {
+class UserInfo {
     int id;
     std::string ip_address;
     std::vector<uint8_t> key;

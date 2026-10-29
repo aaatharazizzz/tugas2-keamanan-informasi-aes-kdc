@@ -1,15 +1,15 @@
 BUILD := ./bin
 TARGETS := $(BUILD)/client $(BUILD)/kdc
 SRC_DIR := ./src
-INCLUDE_DIR := ./include ./src/aes ./src/client ./src/kdc
+INCLUDE_DIR := ./include ./src/aes ./src/client ./src/kdc ./src/common
 INCLUDE_FLAGS := $(addprefix -I,$(INCLUDE_DIR))
 
-CLIENT_SRC_DIR := ./src/client ./src/aes
-CLIENT_SRC := ./src/aes/aes.cpp ./src/client/client_main.cpp
+CLIENT_SRC_DIR := ./src/client ./src/aes ./src/common
+CLIENT_SRC := $(foreach dir, $(CLIENT_SRC_DIR), $(wildcard $(dir)/*.cpp))
 CLIENT_OBJ := $(CLIENT_SRC:.cpp=.o)
 
-KDC_SRC_DIR := ./src/kdc ./src/aes
-KDC_SRC := ./src/aes/aes.cpp ./src/kdc/kdc_main.cpp
+KDC_SRC_DIR := ./src/kdc ./src/aes ./src/common
+KDC_SRC := $(foreach dir, $(KDC_SRC_DIR), $(wildcard $(dir)/*.cpp))
 KDC_OBJ := $(KDC_SRC:.cpp=.o)
 
 CXX := g++
