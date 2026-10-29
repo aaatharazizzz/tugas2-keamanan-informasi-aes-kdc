@@ -30,17 +30,7 @@ void request_to_kdc(int id_a, int id_b, int nonce) {
     };
 }
 
-void handle_kdc_response(const char* buffer) {
-    /*
-    {
-        {"type", static_cast<int>(KDCScenario::KDCResponse)},
-        {"part_1", id_a},
-        {"part_2", id_b}
-    }
-    */
-   AES aes = AES(A)
-    
-}
+
 
 void request_to_kdc(int id_a, int id_b, int nonce) {
     json request = {
